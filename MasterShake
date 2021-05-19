@@ -1,0 +1,67 @@
+import yfinance as yf
+from datetime import timedelta
+from datetime import datetime
+
+
+today = datetime.date(datetime.now())
+a_year_ago = datetime.date(datetime.now()) - timedelta(days = 365)
+
+#input tickers and number of days to scan for
+tickers = ['CVS']
+j = 10
+
+def dload(ticker):
+    data = yf.download(ticker, a_year_ago, today, rounding = True)
+    data = data.sort_values(['Date'] , ascending=[False])
+    k = 1
+    i = 1
+    savedloser = 0
+    savedwin = 0
+    winmany = 0
+    losermany = 0
+    overall = 0
+
+    try:
+        
+        for i in range(j+1):
+            topen = data.iloc[k]['Open']
+            tclose = data.iloc[k]['Adj Close']
+            k += 1
+
+            if tclose > topen:
+                tomopen = data.iloc[k-2]['Open']
+                overall += 1
+                if tomopen > tclose:
+                    winavg = (tomopen - tclose) / tclose * 100
+                    winmany += 1
+                    savedwin = savedwin + winavg
+                else: 
+                    loseavg = (tclose - tomopen) / tclose * 100
+                    losermany += 1
+                    savedloser = savedloser + loseavg
+            
+
+        
+    except Exception as e:
+        pass
+    try:
+        savedloser = savedloser / losermany
+        savedwin = savedwin / winmany
+        ratio = savedwin / savedloser
+        ROI = (winmany * savedwin) - (losermany * savedloser)
+        savedloser = str(round(savedloser, 2))
+        savedwin = str(round(savedwin, 2))
+        ratio = str(round(ratio, 2))
+        
+        
+    except Exception as e:
+        pass
+    print(ticker + ' ' + str(overall) + ' / '+ str(i) + ' days were green days')
+    print (str(winmany) + ' of those had a higher open the following day')
+    print ('average winning gap %: ' + str(savedwin))
+    print ('average losing gap %: ' + str(savedloser))
+    print ('reward to risk ratio: ' + str(ratio))
+    print ('ROI = ' + str(round(ROI, 2)) + '%')
+    
+for ticker in tickers:
+    dload(ticker)
