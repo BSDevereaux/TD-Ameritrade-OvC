@@ -58,8 +58,8 @@ def dload(ticker):
         pass
     print(ticker + ' ' + str(overall) + ' / '+ str(i) + ' days were green days')
     print (str(winmany) + ' of those had a higher open the following day')
-    print ('average winning gap %: ' + str(savedwin))
-    print ('average losing gap %: ' + str(savedloser))
+    print ('average win %: ' + str(savedwin) + '%')
+    print ('average lose %: ' + str(savedloser) + '%')
     print ('reward to risk ratio: ' + str(ratio))
     print ('ROI = ' + str(round(ROI, 2)) + '%')
     
