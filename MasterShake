@@ -44,18 +44,29 @@ def dload(ticker):
         
     except Exception as e:
         pass
-    try:
+        
+    if losermany != 0:    
         savedloser = savedloser / losermany
-        savedwin = savedwin / winmany
+    else: 
+        savedloser = 0
+        
+    if winmany != 0:
+        savedwin = savedwin / winmany   
+    else:
+        savedwin = 0
+    
+    if savedloser != 0:
         ratio = savedwin / savedloser
-        ROI = (winmany * savedwin) - (losermany * savedloser)
-        savedloser = str(round(savedloser, 2))
-        savedwin = str(round(savedwin, 2))
-        ratio = str(round(ratio, 2))
+    else:
+        ratio = savedwin
         
-        
-    except Exception as e:
-        pass
+   
+    ROI = (winmany * savedwin) - (losermany * savedloser)
+    savedloser = str(round(savedloser, 2))
+    savedwin = str(round(savedwin, 2))
+    ratio = str(round(ratio, 2))
+
+
     print(ticker + ' ' + str(overall) + ' / '+ str(i) + ' days were green days')
     print (str(winmany) + ' of those had a higher open the following day')
     print ('average win %: ' + str(savedwin) + '%')
