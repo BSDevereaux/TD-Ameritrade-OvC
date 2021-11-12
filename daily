@@ -90,7 +90,7 @@ def dload(ticker):
     if ROI > 2 and winmany > 2:
         if ratio > 2:
             if savedwin > 1:
-            tackers.append(ticker)
+                tackers.append(ticker)
     
 for ticker in tickers:
     dload(ticker)
