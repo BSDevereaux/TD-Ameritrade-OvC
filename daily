@@ -84,10 +84,12 @@ def dload(ticker):
     print ('average win %: ' + str(savedwin) + '%')
     print ('average lose %: ' + str(savedloser) + '%')
     print ('reward to risk ratio: ' + str(ratio))
-    print ('ROI = ' + str(round(ROI, 2)) + '%')
+    print ('ROI = ' + str(round(ROI, 2)) + '%')   
+    savedwin = float(savedwin)
     
     if ROI > 2 and winmany > 2:
         if ratio > 2:
+            if savedwin > 1:
             tackers.append(ticker)
     
 for ticker in tickers:
