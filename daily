@@ -95,4 +95,4 @@ def dload(ticker):
 for ticker in tickers:
     dload(ticker)
     
-print(tackers)
+print("These stocks pass my parameters: " + tackers)
