@@ -2,23 +2,29 @@ import yfinance as yf
 from datetime import timedelta
 from datetime import datetime
 import pandas as pd
+from xlwt import Workbook
 
 
 today = datetime.date(datetime.now())
 a_year_ago = datetime.date(datetime.now()) - timedelta(days = 365)
 
-#input tickers and number of days to scan for
+
+
 #tickers = ['AAPL','SFIX','AMD','AMZN','BILI','BILL','BYND','CHWY','COUP','CRWD','DKNG','DOCU','DT','ETSY',
 #          'EXPI','FNKO','FSLY','FVRR','GOOS','HUBS','JD','LRCX','MELI','MTCH','NIO','NVDA','OKTA','OSTK',
 #          'PINS','PLTR','RH','ROKU','SFIX','SHAK','SHOP','SNAP','SPCE','SPOT','SQ','STNE','TEAM','TSLA','TTD',
 #          'TWLO','UPWK','X','ZM','ZS','MSFT','PYPL']
 
-tickers = ['SPY']
+#input tickers and number of days to scan for
+tickers = ['FB','QCOM','F']
+numberofdays = 10
+
+wb = Workbook()
+sheet1 = wb.add_sheet('Shake')
 tackers = []
+x = 0
 
-j = 10
-
-def dload(ticker):
+def dload(ticker, sheet1, x, today):
     k = 1
     i = 1
     savedloser = 0
@@ -27,8 +33,12 @@ def dload(ticker):
     losermany = 0
     overall = 0
     
+    
     try:
-        data = yf.download(ticker, a_year_ago, today, rounding = True)
+        #data = yf.download(ticker, a_year_ago, today, rounding = True)
+        
+        tick = yf.Ticker(ticker)
+        data = tick.history(period="1y", interval="1d", rounding=True)
         data = data.sort_values(['Date'] , ascending=[False])
     except Exception as e:
         pass
@@ -37,9 +47,9 @@ def dload(ticker):
 
     try:
         
-        for i in range(j+1):
+        for i in range(numberofdays):
             topen = data.iloc[k]['Open']
-            tclose = data.iloc[k]['Adj Close']
+            tclose = data.iloc[k]['Close']
             k += 1
 
             if tclose > topen:
@@ -52,9 +62,7 @@ def dload(ticker):
                 else: 
                     loseavg = (tclose - tomopen) / tclose * 100
                     losermany += 1
-                    savedloser = savedloser + loseavg
-            
-
+                    savedloser = savedloser + loseavg          
         
     except Exception as e:
         pass
@@ -72,29 +80,54 @@ def dload(ticker):
     if savedloser != 0:
         ratio = savedwin / savedloser
     else:
-        ratio = savedwin
-        
-   
+        ratio = 100
+    
     ROI = (winmany * savedwin) - (losermany * savedloser)
-    savedloser = str(round(savedloser, 2))
-    savedwin = str(round(savedwin, 2))
-    ratio = float(round(ratio, 2))
-    print(ticker + ' ' + str(overall) + ' / '+ str(i) + ' days were green days')
-    print (str(winmany) + ' of those had a higher open the following day')
-    print ('average win %: ' + str(savedwin) + '%')
-    print ('average lose %: ' + str(savedloser) + '%')
-    print ('reward to risk ratio: ' + str(ratio))
-    print ('ROI = ' + str(round(ROI, 2)) + '%')   
-    savedwin = float(savedwin)
+    
+    today = str(today)
+    savedwinsheet = savedwin / 100
+    savedlosersheet = savedloser / 100
+    ROIsheet = ROI / 100
+    sheet1.write(x, 0, today) 
+    sheet1.write(x, 1, ticker)
+    sheet1.write(x, 6, overall)
+    sheet1.write(x, 7, winmany)
+    sheet1.write(x, 8, savedwinsheet)
+    sheet1.write(x, 9, savedlosersheet)
+    sheet1.write(x, 10, ROIsheet)
+    sheet1.write(x, 11, ratio)
     
     if ROI > 2 and winmany > 2:
         if ratio > 2:
             if savedwin > 1:
                 tackers.append(ticker)
     
-for ticker in tickers:
-    dload(ticker)
+    savedloser = str(round(savedloser, 2))
+    savedwin = str(round(savedwin, 2))
+    ratio = float(round(ratio, 2))
+            
+    if ratio == 100.0:
+        ratio = 'infinite'
+
+    print(ticker + ' ' + str(overall) + ' / '+ str(i+1) + ' days were green days')
+    print (str(winmany) + ' of those had a higher open the following day')
+    print ('average win %: ' + str(savedwin) + '%')
+    print ('average lose %: ' + str(savedloser) + '%')
+    print ('reward to risk ratio: ' + str(ratio))
+    print ('ROI = ' + str(round(ROI, 2)) + '%')
+    print ()
+    savedwin = float(savedwin)
     
+    
+
+for ticker in tickers:
+    dload(ticker, sheet1, x, today)
+    x += 1
+
+
+   
 tackers = str(tackers)
 print()       
 print("These stocks pass my parameters: " + tackers)
+today = str(today)
+#wb.save('C:\\Users\\brian\\Desktop\\Shake' + today + '.xls')
