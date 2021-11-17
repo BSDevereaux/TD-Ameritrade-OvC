@@ -100,8 +100,12 @@ def dload(ticker, sheet1, x, today):
     
     style1 = xw.easyxf('font: name Calibri; align: horiz center')
     style2 = xw.easyxf('font: name Calibri; align: horiz center', num_format_str= "0.00%")
-    sheet1.write(x, 0, today, style1) 
+    
+    sheet1.write(x, 0, today, style1)
     sheet1.write(x, 1, ticker, style1)
+    sheet1.write(x, 2, '', style1)
+    sheet1.write(x, 3, '', style1)
+    sheet1.write(x, 4, '', style1)
     sheet1.write(x, 6, overall, style1)
     sheet1.write(x, 7, winmany, style1)
     sheet1.write(x, 8, savedwinsheet, style2)
@@ -114,6 +118,9 @@ def dload(ticker, sheet1, x, today):
         if ratio > 2:
             if savedwin > 1:
                 tackers.append(ticker)
+                sheet1.write(x, 5, 'Y', style1)
+    else:
+        sheet1.write(x, 5, '', style1)
             
     if ratio == 100.00:
         ratio = 'infinite'
