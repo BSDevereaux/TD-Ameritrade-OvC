@@ -22,6 +22,9 @@ a_year_ago = datetime.date(datetime.now()) - timedelta(days = 365)
 tickers = ['AAPL','AMD','TSLA']
 numberofdays = 10
 
+#nasdaq_exchange_info = pd.read_csv('apt.txt', '|')
+#tickers = nasdaq_exchange_info['Symbol']
+
 wb = Workbook()
 sheet1 = wb.add_sheet('Shake')
 tackers = []
