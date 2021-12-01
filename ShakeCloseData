@@ -1,0 +1,56 @@
+import yfinance as yf
+from datetime import timedelta
+from datetime import datetime
+import pandas as pd
+import xlwt as xw
+from xlwt import Workbook
+import requests
+today = datetime.date(datetime.now())
+a_year_ago = datetime.date(datetime.now()) - timedelta(days = 365)
+
+
+
+#------ADD TICKERS YOU WANT TO GET THE DAILY CLOSE FOR--------#
+
+tickers = ['BYND', 'FNKO', 'FSLY', 'NIO', 'X', 'FDX', 'MDT', 'MS']
+
+
+
+#--------PUT YOUR  OWN PATH IF YOU WANT IT SAVED TO YOUR DESKTOP----------#
+savefile = 'C:\\Users\\brian\\Desktop\\Close '
+
+
+#-------------------ADMIN---------------------------#
+wb = Workbook()
+sheet1 = wb.add_sheet('Shake')
+tackers = []
+k = 0
+#-------------------ADMIN---------------------------#
+
+
+def dload(ticker, sheet1, k, today):
+    try:
+        tick = yf.Ticker(ticker)
+        data = tick.history(period="3mo", interval="1d", rounding=True)
+        data = data.sort_values(['Date'] , ascending=[False])
+        tclose = data.iloc[k]['Close']
+        tclose = round(tclose, 2)
+        style1 = xw.easyxf('font: name Calibri; align: horiz center')
+        
+        sheet1.write(k, 0, ticker, style1)
+        sheet1.write(k, 1, tclose, style1)
+        print('finished with ' + ticker)
+        
+    except Exception as e:
+        print('missed close on ' + ticker)
+    
+    
+for ticker in tickers:
+    dload(ticker, sheet1, k, today)
+    k += 1
+
+
+print()       
+
+today = str(today)
+wb.save(savefile + today + '.xls')
