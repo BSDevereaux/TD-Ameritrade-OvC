@@ -13,13 +13,7 @@ a_year_ago = datetime.date(datetime.now()) - timedelta(days = 365)
 
 
 
-#tickers = ['AAPL','SFIX','AMD','AMZN','BILI','BILL','BYND','CHWY','COUP','CRWD','DKNG','DOCU','DT','ETSY',
-#          'EXPI','FNKO','FSLY','FVRR','GOOS','HUBS','JD','LRCX','MELI','MTCH','NIO','NVDA','OKTA','OSTK',
-#          'PINS','PLTR','RH','ROKU','SFIX','SHAK','SHOP','SNAP','SPCE','SPOT','SQ','STNE','TEAM','TSLA','TTD',
-#          'TWLO','UPWK','X','ZM','ZS','MSFT','PYPL','ABBV','ABT','ADBE','BA','BABA','BAC','BDX','CAT','CMCSA','CMG',
-#          'CRM','CSCO','CVS','DIS','F','FB','FDX','GOOGL','HD','HON','INTC','ITW','JNJ','JPM',
-#          'KO','MCD','MDT','MMM','MRNA','MS','MSFT','MU','NFLX','NKE','NOC','ORCL','PEP',
-#          'PFE','PG','QCOM','SBUX','SYY','UNH','UNP','V','WFC','WM','WMT']
+#tickers = ['AAPL','SFIX','AMD','AMZN','BILI','BILL','BYND','CHWY','COUP','CRWD','DKNG','DOCU','DT','ETSY','EXPI','FNKO','FSLY','FVRR','GOOS','HUBS','JD','LRCX','MELI','MTCH','NIO','NVDA','OKTA','OSTK','PINS','PLTR','RH','ROKU','SFIX','SHAK','SHOP','SNAP','SPCE','SPOT','SQ','STNE','TEAM','TSLA','TTD','TWLO','UPWK','X','ZM','ZS','MSFT','PYPL','ABBV','ABT','ADBE','BA','BABA','BAC','BDX','CAT','CMCSA','CMG','CRM','CSCO','CVS','DIS','F','FB','FDX','GOOGL','HD','HON','INTC','ITW','JNJ','JPM','KO','MCD','MDT','MMM','MRNA','MS','MSFT','MU','NFLX','NKE','NOC','ORCL','PEP','PFE','PG','QCOM','SBUX','SYY','UNH','UNP','V','WFC','WM','WMT']
 
 #input tickers and number of days to scan for
 tickers = ['AAPL','AMD','TSLA']
