@@ -25,6 +25,7 @@ wb = Workbook()
 sheet1 = wb.add_sheet('Shake')
 tackers = []
 k = 0
+i = 0
 #-------------------ADMIN---------------------------#
 
 
@@ -33,7 +34,7 @@ def dload(ticker, sheet1, k, today):
         tick = yf.Ticker(ticker)
         data = tick.history(period="3mo", interval="1d", rounding=True)
         data = data.sort_values(['Date'] , ascending=[False])
-        tclose = data.iloc[k]['Close']
+        tclose = data.iloc[i]['Close']
         tclose = round(tclose, 2)
         style1 = xw.easyxf('font: name Calibri; align: horiz center')
         
