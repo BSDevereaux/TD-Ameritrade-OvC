@@ -1,0 +1,215 @@
+from datetime import datetime
+from datetime import timedelta
+import yfinance as yf
+from statistics import mean
+import xlwt as xw
+from xlwt import Workbook
+today = datetime.date(datetime.now())
+a_year_ago = datetime.date(datetime.now()) - timedelta(days = 365)
+highlist = []
+lowlist = []
+avghighlist = []
+avglowlist = []
+header = ['Ticker','Win Criteria','1 Share Gains','ROI','Avg Highs','Avg Lows','Times Triggered','Win % Times Triggered','R:R']
+num1 = []
+num2 = []
+num3 = []
+num4 = []
+num5 = []
+num6 = []
+num7 = []
+num8 = []
+num9 = []
+ticklist = []
+style1 = xw.easyxf('font: name Calibri; align: horiz center')
+style2 = xw.easyxf('font: name Calibri; align: horiz center', num_format_str= "0.00%")
+style3 = xw.easyxf('font: name Calibri; align: horiz center', num_format_str= "$0.00")
+x = 0
+a = 1
+b = 1
+wb = Workbook()
+sheet1 = wb.add_sheet('2021 OvC')
+testing = 0
+
+
+#--------------------------------------------------------------------------------
+#--------------------------------------------------------------------------------
+#------AT THE VERY BOTTOM, REFORMAT THE C: DRIVE WITH YOUR PERSONAL DESKTOP------
+#--------------------------------------------------------------------------------
+#--------------------------------------------------------------------------------
+
+
+
+#----------------vv Change Tickers To Whatever You Want vv-----------------------
+
+tickers = ['AAP', 'AAPL', 'ACN', 'ADBE', 'ADP', 'AJG', 'ALB', 'AMAT', 'AMD', 'AMP', 'ANET', 'ANSS', 'AON', 'APH', 'ARE', 'AVB', 'AVGO', 'AWK', 'AZO', 'BBWI', 'BILI', 'BILL', 'BLL', 'BRO', 'CB', 'CBOE', 'CDNS', 'CDW', 'CHD', 'CLX', 'COP', 'COST', 'CRM', 'CSCO', 'CTAS', 'CTLT', 'CTSH', 'CVS', 'DG', 'DGX', 'DHI', 'DHR', 'DLTR', 'DOCU', 'DVN', 'DXCM', 'ED', 'EFX', 'EIX', 'ESS', 'ETSY', 'EXC', 'EXPD', 'EXPE', 'EXR', 'FANG', 'FFIV', 'FISV', 'FRC', 'FRT', 'FTNT', 'GIS', 'HCA', 'HD', 'HIG', 'HOLX', 'HUBS', 'IDXX', 'INFO', 'IR', 'IT', 'JBHT', 'KEYS', 'KLAC', 'KMB', 'LEN', 'LH', 'LKQ', 'LOW', 'MAA', 'MCD', 'MCK', 'MLM', 'MMC', 'MPWR', 'MRNA', 'MS', 'MSCI', 'MSFT', 'MSI', 'MTD', 'MU', 'NEE', 'NOW', 'NVDA', 'ODFL', 'ORCL', 'ORLY', 'PAYX', 'PEP', 'PFE', 'PG', 'PKI', 'PLD', 'PNC', 'POOL', 'PSA', 'PWR', 'QCOM', 'RBLX', 'REGN', 'RSG', 'SBAC', 'SHOP', 'SHW', 'SJM', 'SNPS', 'SPGI', 'SRE', 'STE', 'STX', 'TEAM', 'TECH', 'TMO', 'TSCO', 'TSLA', 'ULTA', 'UNH', 'VRSK', 'VRSN', 'WELL', 'WHR', 'WM', 'WST', 'XLNX', 'ZS', 'ZTS']
+#tickers = ['AAPL', 'ABBV', 'ABT', 'ADBE', 'AMD', 'AMZN', 'BA', 'BABA', 'BAC', 'BDX', 'BILI', 'BILL', 'BYND', 'CAT', 'CHWY', 'CMCSA', 'CMG', 'COUP', 'CRM', 'CRWD', 'CSCO', 'CVS', 'DDOG', 'DIS', 'DKNG', 'DOCU', 'DT', 'ENPH', 'ETSY', 'EXPI', 'F', 'FB', 'FDX', 'FNKO', 'FSLY', 'FVRR', 'GOOGL', 'GOOS', 'HD', 'HON', 'HUBS', 'INTC', 'ITW', 'JD', 'JNJ', 'JPM', 'KO', 'LRCX', 'MCD', 'MDT', 'MELI', 'MMM', 'MRNA', 'MS', 'MSFT', 'MTCH', 'MU', 'NFLX', 'NIO', 'NKE', 'NOC', 'NVDA', 'O','OKTA', 'ORCL', 'OSTK', 'PEP', 'PFE', 'PG', 'PINS', 'PLTR', 'PYPL', 'QCOM','RBLX', 'RH', 'ROKU', 'SBUX', 'SFIX', 'SHAK', 'SHOP', 'SNAP', 'SPCE', 'SPOT', 'SQ', 'STNE', 'SYY', 'TEAM', 'TSLA', 'TTD', 'TWLO', 'UNH', 'UNP', 'V', 'WFC', 'WM', 'WMT', 'X', 'ZM', 'ZS']
+percwinner = [.02, .03, .04]
+
+days = 125
+# 60 days = 3mo
+# 125 days = 6mo
+# 245 days = 1yr
+
+#-----------------^^ Change % Gain To Whatever You Want ^^-----------------------
+
+
+
+#--------------------Dont Mess With Anything Below Here--------------------------
+#--------------------------------------------------------------------------------
+if days > 240:
+    timelength = '1 Year'
+else:
+    if days < 65:
+        timelength = '3 Months'
+    else:
+        timelength = '6 Months'
+
+
+def GetData(ticker, percgain, timelength):
+    k = 5
+    winner = 0
+    loser = 0
+    totaltriggered = 0
+    gainer = 0
+    lostest = 0
+    try:
+        data = yf.download(ticker, a_year_ago, today, rounding = True)
+        data = data.sort_values(['Date'] , ascending=[False])
+
+        
+        for i in range(days):
+            topen = data.iloc[k-1]['Open']
+            percopen = data.iloc[b]['Open']
+            yclose = data.iloc[k]['Close']
+            j = k
+            for i in range(5):
+                highs = data.iloc[j-1]['High']
+                highlist.append(highs)
+                j -= 1
+                highoffivedays = max(highlist)
+            j = k
+            for i in range(5):
+                lows = data.iloc[j-1]['Low']
+                lowlist.append(lows)
+                j -= 1
+                lowoffivedays = min(lowlist)
+            
+            finalclose = data.iloc[k-5]['Close']
+        
+             
+            #if topen < yclose:
+            if testing == 0:
+                totaltriggered += 1
+                averagetriggerhigh = (highoffivedays - topen) / topen
+                avghighlist.append(averagetriggerhigh)
+                testpercentgain = 1 + percgain
+                testpercgain = topen * testpercentgain
+                if highoffivedays > testpercgain:
+                   winner += 1
+                   gains = topen * percgain
+                   gainer += gains
+                   
+                else: 
+                   loser += 1
+                   averagetriggerlow = (lowoffivedays - topen) / topen
+                   avglowlist.append(averagetriggerlow)
+                   if topen > finalclose:
+                       lost = (topen - finalclose)
+                       lostest += lost
+                   else:
+                       lost = finalclose - topen
+                       lostest += lost
+                   
+
+            else:
+                pass
+                
+            highlist.clear()
+            lowlist.clear()
+            k+=1
+    
+        onesharewinamount = gainer - lostest
+        percreturn = onesharewinamount / percopen  
+        avghigh = mean(avghighlist)
+        avglow = mean(avglowlist)
+        winavg = winner / totaltriggered
+        totaltriggered = int(totaltriggered)
+        risktoreward = avghigh / avglow * -1
+        risktoreward = round(risktoreward, 2)
+        
+        num1.append(ticker)
+        num2.append(percgain)
+        num3.append(onesharewinamount)
+        num4.append(percreturn)
+        num5.append(avghigh)
+        num6.append(avglow)
+        num7.append(totaltriggered)
+        num8.append(winavg)
+        num9.append(risktoreward)
+               
+        percentagegain = percgain * 100
+        percreturn = percreturn * 100
+        avghigh = avghigh * 100
+        avglow = avglow * 100
+        winavg = winavg * 100
+        
+        if onesharewinamount > 30:
+            if percreturn > 30:
+                ticklist.append(ticker)
+                print('----- ' + ticker + ' -----')
+                print('Using A ' + str(percentagegain) + '% Gain As Win Criteria' )
+                print(f"Win Amount Playing 1 Share Each Time: ${onesharewinamount:.2f}")
+                print(f"ROI Over {timelength}: {percreturn:.2f}%")
+                print(f"Avg Highs: {avghigh:.2f}%")
+                print(f"Avg Lows: {avglow:.2f}%")
+                print(f"Win % of times played: {winavg:.2f}%")
+                print(f"Risk To Reward: {risktoreward:.2f}")
+                print(' ')
+            
+        avglowlist.clear()
+        avghighlist.clear()
+        
+    except Exception as e:
+        pass    
+    
+
+for percgain in percwinner:        
+    for ticker in tickers:      
+        GetData(ticker, percgain, timelength)
+        
+try:
+    for i in range(9):
+        head = header.pop(0)
+        sheet1.write(0, i, head, style1)
+    for num in num1:
+        number2 = num2.pop(0)
+        number3 = num3.pop(0)
+        number4 = num4.pop(0)
+        number5 = num5.pop(0)
+        number6 = num6.pop(0)
+        number7 = num7.pop(0)
+        number8 = num8.pop(0)
+        number9 = num9.pop(0)
+        sheet1.write(a, 0, num, style1)
+        sheet1.write(a, 1, number2, style2)
+        sheet1.write(a, 2, number3, style3)
+        sheet1.write(a, 3, number4, style2)
+        sheet1.write(a, 4, number5, style2)
+        sheet1.write(a, 5, number6, style2)
+        sheet1.write(a, 6, number7, style1)
+        sheet1.write(a, 7, number8, style2)
+        sheet1.write(a, 8, number9, style1)
+        a += 1
+except Exception as e:
+    print('Logging jacked up')
+        
+today = str(today)
+timelength = str(timelength)
+wb.save('C:\\Users\\brian\\Desktop\\2021OvC ' + timelength +'_'+ today + '.xls')        
+        
+print(ticklist)        
+        
+        
+        
+        
