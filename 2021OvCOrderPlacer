@@ -1,0 +1,197 @@
+import logging
+import alpaca_trade_api as tradeapi
+import time as _time
+from datetime import datetime
+from pytz import timezone
+from datetime import timedelta
+import requests
+from datetime import time
+import pandas as pd
+import yfinance as yf
+from xlwt import Workbook
+from statistics import mean
+import alpaca_trade_api as tradeapi
+today = datetime.date(datetime.now())
+a_year_ago = datetime.date(datetime.now()) - timedelta(days = 365)
+doy = str(datetime.now().timetuple().tm_yday)
+onetacker = []
+twotacker = []
+threetacker = []
+fourtacker = []
+
+
+# Initiate Keys
+API_KEY = 'PK1VONG19GLI1Q4WBBQD'
+SECRET_KEY = 'kYJtWvsJZcwL8e9JkxkdBjAOo9RQmyZnhSsjN13a'
+APCA_API_BASE_URL = "https://paper-api.alpaca.markets"
+client_id = 'WVAAWUDLUWPICKBGAR8OB0SGJZWPR7D7'
+
+# Connect to Alpaca
+api = tradeapi.REST(API_KEY, SECRET_KEY, APCA_API_BASE_URL, api_version='v2')
+account = api.get_account()
+
+
+onetickers = []
+twotickers = ['DVN','DOCU'] 
+threetickers = ['AMD','BILL','TEAM','XLNX','FTNT']
+fourtickers = []
+
+
+
+def Get_Close(ticker):
+    print(ticker)
+    try:
+        data = yf.download(ticker, a_year_ago, today, rounding = True)
+        data = data.sort_values(['Date'] , ascending=[False])
+        yclose = data.iloc[0]['Close']
+        return yclose
+    except Exception as e:
+        yclose = 0
+        return yclose
+
+
+def Last_Price(ticker):
+    try:
+        endpoint = r"https://api.tdameritrade.com/v1/marketdata/{}/quotes".format(ticker)
+        payload = {'apikey': client_id}
+        content = requests.get(url = endpoint, params = payload)
+        last_price = content.json()
+        last_price = last_price[ticker]['lastPrice']              
+        return last_price
+    
+    except Exception as e:
+        last_price = 10000
+        return last_price
+
+def Buy_Order(api, ticker, qty, yclose, client_order_id):
+    try:
+        print(ticker)
+        print(qty)
+        print(yclose)
+        yclose = str(yclose)
+        print(client_order_id)                              
+        api.submit_order(ticker, qty, 'buy', 'limit', 'day', limit_price=yclose, client_order_id=client_order_id, extended_hours=True)
+        
+        
+        print('Buy order submitted for ' + ticker)
+        return True
+    
+    except Exception as e:
+        print(e)
+        return False
+    
+def Sell_Order(api, client_order_id, multiple):
+    try:
+        my_order = api.get_order_by_client_order_id(client_order_id)
+        my_order = str(my_order)
+        fill_price = my_order.split()[20][1:][:-2]
+        if fill_price == 'on':
+            order_id = my_order.split()[26][1:][:-2]
+            try:
+                api.delete('/orders/{}'.format(order_id))
+                print('canceled buy order')
+            except Exception as e:
+                print(e)
+        else:
+            print(fill_price)
+            exit_price = float(multiple) * float(fill_price)
+            print(exit_price)
+            exit_price = str(round(exit_price, 2))
+            print(exit_price)
+            qty = my_order.split()[38][1:][:-2]
+            qty = int(qty)
+            ticker = my_order.split()[54][1:][:-2]
+            print(ticker)
+            ticker = str(ticker)
+            print(ticker + ' String')
+            api.submit_order(ticker, qty, 'sell', 'limit', 'gtc', limit_price=exit_price) #stop_price=stop_price)
+            print('sell order submitted')
+    except Exception as e:
+        exit_price = 0
+        print(e)
+
+def Play_One(ticker):
+    try:
+        yclose = Get_Close(ticker)
+        lprice = Last_Price(ticker)
+        if lprice < yclose:
+            qty = int(1000 / lprice)
+            client_order_id = ticker + doy
+            print(client_order_id)
+            border = Buy_Order(api, ticker, qty, yclose, client_order_id)
+            onetacker.append(client_order_id)
+    except Exception as e:
+        print(e)
+    
+def Play_Two(ticker):
+    try:
+        yclose = Get_Close(ticker)
+        lprice = Last_Price(ticker)
+        if lprice < yclose:
+            qty = int(1000 / lprice)
+            client_order_id = ticker + doy
+            print(client_order_id)
+            border = Buy_Order(api, ticker, qty, yclose, client_order_id)
+            twotacker.append(client_order_id)
+    except Exception as e:
+        print(e)
+        
+def Play_Three(ticker):
+    try:
+        yclose = Get_Close(ticker)
+        lprice = Last_Price(ticker)
+        if lprice < yclose:
+            qty = int(1000 / lprice)
+            client_order_id = ticker + doy
+            border = Buy_Order(api, ticker, qty, yclose, client_order_id)
+            threetacker.append(client_order_id)
+    except Exception as e:
+        print(e)
+
+def Play_Four(ticker):
+    try:
+        yclose = Get_Close(ticker)
+        lprice = Last_Price(ticker)
+        if lprice < yclose:
+            qty = int(1000 / lprice)
+            client_order_id = ticker + doy
+            border = Buy_Order(api, ticker, qty, yclose, client_order_id)
+            fourtacker.append(client_order_id)
+    except Exception as e:
+        print(e)
+
+for ticker in onetickers:
+    Play_One(ticker)
+for ticker in twotickers:   
+    Play_Two(ticker)
+for ticker in threetickers:
+    Play_Three(ticker)
+for ticker in fourtickers:
+    Play_Four(ticker)
+
+print('One Percent Tickers')
+print(onetacker)
+print('Two Percent Tickers')
+print(twotacker)
+print('Three Percent Tickers')
+print(threetacker)
+print('Four Percent Tickers')
+print(fourtacker)
+print('waiting 20 seconds for orders to fill')    
+_time.sleep(20)
+for client_order_id in onetacker:
+    multiple = 1.01
+    print(client_order_id)
+    Sell_Order(api, client_order_id, multiple)
+for client_order_id in twotacker:
+    multiple = 1.02
+    print(client_order_id)
+    Sell_Order(api, client_order_id, multiple)
+for client_order_id in threetacker:
+    multiple = 1.03
+    print(client_order_id)
+    Sell_Order(api, client_order_id, multiple)
+for client_order_id in fourtacker:
+    multiple = 1.04
+    print(client_order_id)
+    Sell_Order(api, client_order_id, multiple)
