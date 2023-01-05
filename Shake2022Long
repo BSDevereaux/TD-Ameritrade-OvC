@@ -14,7 +14,7 @@ a_year_ago = datetime.date(datetime.now()) - timedelta(days = 365)
 # Input tickers and number of days to scan for #
 #----------------------------------------------#
 
-tickers = ['AAL', 'AAPL', 'ABBV', 'ADBE', 'AMD', 'AMZN', 'BA', 'BABA', 'BAC', 'BILI', 'BYND', 'CMCSA', 'CMG', 'CRM', 'CRWD', 'CSCO', 'CVS', 'CVX',  'DIS', 'DKNG', 'DOCU', 'ETSY', 'F', 'FB', 'FDX', 'FNKO', 'GOOG', 'HD', 'HON', 'INTC', 'ITW', 'JD', 'JNJ', 'JPM', 'KO', 'LRCX', 'MCD', 'MDT', 'MMM', 'MRNA', 'MS', 'MSFT', 'MTCH', 'MU', 'NFLX', 'NIO', 'NKE', 'NOC', 'NVDA', 'OKTA', 'ORCL', 'PEP', 'PFE', 'PG', 'PINS', 'PLTR', 'PYPL', 'QCOM', 'RBLX', 'ROKU', 'SBUX', 'SFIX', 'SHAK', 'SHOP', 'SNAP','SPOT', 'SQ', 'STNE', 'SYY', 'TSLA','TWLO', 'UNP', 'V', 'WFC', 'WM', 'WMT', 'X', 'ZM', 'ZS']
+tickers = ['AAL', 'AAPL', 'ABBV', 'ADBE', 'AMD', 'AMZN', 'BA', 'BABA', 'BAC', 'BILI', 'BYND', 'CMCSA', 'CRM', 'CRWD', 'CSCO', 'CVS', 'CVX',  'DIS', 'DKNG', 'DOCU', 'ETSY', 'F', 'FDX', 'FNKO', 'GOOG', 'HD', 'HON', 'INTC', 'JD', 'JNJ', 'JPM', 'KO', 'LRCX', 'MCD', 'MDT', 'META', 'MMM', 'MRNA', 'MS', 'MSFT', 'MTCH', 'MU', 'NFLX', 'NIO', 'NOC', 'NVDA', 'OKTA', 'ORCL', 'PEP', 'PFE', 'PG', 'PINS', 'PLTR', 'PYPL', 'QCOM', 'RBLX', 'ROKU', 'SBUX', 'SFIX', 'SHOP', 'SNAP','SPOT', 'SQ', 'STNE', 'SYY', 'TSLA','TWLO', 'UNP', 'V', 'WFC', 'WM', 'WMT', 'X', 'ZM', 'ZS']
 
 numberofdays = 10
 OutputEachStock = 'Yes'
